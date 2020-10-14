@@ -13,8 +13,8 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter.FileIO.Subsets
 
     public SubsetWriter(List<int> elementIds)
     {
-      this.ElementIds = elementIds;
       elementIds.ThrowIfNullOrEmpty("Failed to create subset writer because element ids were null or empty");
+      this.ElementIds = elementIds;
     }
 
     protected bool WriteSubsetFile(FilePath file)
