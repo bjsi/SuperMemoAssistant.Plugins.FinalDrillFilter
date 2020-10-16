@@ -28,10 +28,10 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter
     [Heading("By Jamesb | Experimental Learning")]
 
     [Heading("Features:")]
-    [Text(@"- Filter the final drill based on the category path of items.")]
+    [Text("- Filter the final drill based on the category path of items.")]
 
     [Heading("Default Filter Settings")]
-    [Field(Name = "Default Filter")]
+    [Field(Name = "Default Filter (comma separated list of concept names)")]
     public string DefaultFilter { get; set; }
 
     [JsonIgnore]

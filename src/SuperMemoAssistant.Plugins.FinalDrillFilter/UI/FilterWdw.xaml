@@ -6,16 +6,48 @@
         xmlns:local="clr-namespace:SuperMemoAssistant.Plugins.FinalDrillFilter.UI"
         mc:Ignorable="d"
         Title="Final Drill Filter" Height="450" Width="450">
+  <Window.Resources>
+    <local:ElementCollection x:Key="elements" />
+    <CollectionViewSource x:Key="cvsElements" Source="{StaticResource elements}"/>
+  </Window.Resources>
     <Grid>
     <Grid.RowDefinitions>
-      <RowDefinition></RowDefinition>
+      <RowDefinition Height="40"></RowDefinition>
+      <RowDefinition Height="30"></RowDefinition>
       <RowDefinition></RowDefinition>
       <RowDefinition Height="40"></RowDefinition>
     </Grid.RowDefinitions>
-    
       
+    <!-- Include filter -->
+    <DockPanel Grid.Row="0">
+      <TextBlock Name="FilterString" VerticalAlignment="Center" Margin="5" Text="Include:"/>
+      <TextBox Text="{Binding DefaultFilter}" VerticalAlignment="Center" Margin="5"/>
+    </DockPanel>
+      
+    <Button Grid.Row="1"
+            Content=" Preview Filter "
+            Margin="5"
+            VerticalAlignment="Center"
+            Click="PreviewFilterBtnClick"
+            HorizontalAlignment="Left"/>
+    
+    <!-- Datagrid -->
+    <DataGrid AutoGenerateColumns="False"
+              Margin="5"
+              Grid.Row="2"
+              ItemsSource="{Binding Source={StaticResource cvsElements}}"
+              CanUserAddRows="False"
+              Name="FilterDataGrid">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Id" Binding="{Binding Id}"/>
+        <DataGridTextColumn Header="Question"/>
+        <DataGridTextColumn Header="Answer" />
+        <DataGridTextColumn Header="Category Path" />
+      </DataGrid.Columns>
+    </DataGrid>
+
     <!-- Buttons -->
-    <Grid Grid.Row="2">
+    <Grid Grid.Row="3">
       <Button HorizontalAlignment="Left"
               Content=" Cancel "
               Margin="5"

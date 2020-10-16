@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Input;
 using Anotar.Serilog;
 using SuperMemoAssistant.Extensions;
+using SuperMemoAssistant.Interop.SuperMemo.Elements.Types;
 using SuperMemoAssistant.Plugins.FinalDrillFilter.FileIO.Drills;
 using SuperMemoAssistant.Plugins.FinalDrillFilter.Helpers;
 using SuperMemoAssistant.Plugins.FinalDrillFilter.UI;
@@ -79,8 +80,6 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter
     #endregion
 
 
-
-
     #region Methods Impl
 
     /// <inheritdoc />
@@ -111,7 +110,27 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter
         return;
       }
 
-      LaunchFinalDrillFilterWdw(ids);
+      var elements = GetDrillElements(ids);
+      if (elements.IsNullOrEmpty())
+      {
+        string msg = "Failed to open final drill filter because there was an error converting element ids to IElement objects";
+        MessageBox.Show(msg, "Error");
+        LogTo.Warning(msg);
+        return;
+      }
+
+      LaunchFinalDrillFilterWdw(elements);
+    }
+
+    private List<IElement> GetDrillElements(List<int> ids)
+    {
+      List<IElement> ret = new List<IElement>();
+      foreach (var id in ids)
+      {
+        var element = Svc.SM.Registry.Element[id];
+        ret.Add(element);
+      }
+      return ret;
     }
 
     /// <summary>Show a message box that the drill queue is empty</summary>
@@ -130,7 +149,7 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter
     }
 
     /// <summary>Open the filter window if it is not already open</summary>
-    private void LaunchFinalDrillFilterWdw(List<int> drillElementsIds)
+    private void LaunchFinalDrillFilterWdw(List<IElement> elements)
     {
       if (CurrentInstance != null && !CurrentInstance.IsClosed)
       {
@@ -138,11 +157,9 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter
         return;
       }
 
-      var writer = new FilteredDrillWriter(drillElementsIds);
-
       Application.Current.Dispatcher.Invoke(() =>
       {
-        var wdw = new FilterWdw(writer);
+        var wdw = new FilterWdw(elements);
         wdw.ShowAndActivate();
       });
     }
