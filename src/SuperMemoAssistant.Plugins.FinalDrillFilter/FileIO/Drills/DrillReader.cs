@@ -6,10 +6,14 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter.FileIO.Drills
 {
   public class DrillReader : SubsetReader
   {
-    private static DirectoryPath InfoDir { get; } = new DirectoryPath(Svc.SM.Collection.Path).Combine("info");
-    private static FilePath DrillFile { get; } = InfoDir.CombineFile("drill.dat");
 
-    public DrillReader(): base(DrillFile) { }
+    public DrillReader(): base(GetDrillPath()) { }
     public DrillReader(FilePath path): base(path) { }
+
+    private static FilePath GetDrillPath()
+    {
+      var infoDir = new DirectoryPath(Svc.SM.Collection.Path).Combine("info");
+      return infoDir.CombineFile("drill.dat");
+    }
   }
 }

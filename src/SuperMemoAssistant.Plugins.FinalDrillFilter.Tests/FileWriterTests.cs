@@ -13,14 +13,25 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter.Tests
     private FilePath TestFile { get; } = FixtureDir.CombineFile(@"write_tests.sub");
 
     [Fact]
-    public void FileWriterWritesCorrectData()
+    public void FileWriterWritesData()
     {
       var list = new List<int> { 1, 2, 3, 4, 5 };
-      var writer = new FilteredDrillWriter(list);
+      var writer = new FilteredDrillWriter(list, TestFile);
+      var ret = writer.WriteDrillFile();
+      Assert.True(ret);
+    }
+
+    [Fact]
+    public void FileWriterWritesCorrectData()
+    {
+      var expected = new List<int> { 1, 2, 3, 4, 5 };
+      var writer = new FilteredDrillWriter(expected, TestFile);
       var ret = writer.WriteDrillFile();
       Assert.True(ret);
 
-      // Read back to check
+      var reader = new DrillReader(TestFile);
+      var actual = reader.ReadSubsetFile();
+      Assert.Equal(expected, actual);
     }
   }
 }

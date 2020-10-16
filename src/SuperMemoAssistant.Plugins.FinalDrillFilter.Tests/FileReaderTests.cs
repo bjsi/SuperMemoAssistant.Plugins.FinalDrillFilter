@@ -33,6 +33,7 @@ using Extensions.System.IO;
 using SuperMemoAssistant.Plugins.FinalDrillFilter.FileIO.Drills;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Xunit;
 
 namespace SuperMemoAssistant.Plugins.FinalDrillFilter.Tests
@@ -40,10 +41,12 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter.Tests
   public class FileReaderTests
   {
 
+    private static DirectoryPath FixtureDir = new DirectoryPath(Environment.CurrentDirectory).Combine("Fixture");
+
     /// <summary>
     /// Test .sub file containing the integers 1, 2, 3, 4, 5
     /// </summary>
-    private readonly FilePath TestFile = @"";
+    private readonly FilePath TestFile = FixtureDir.CombineFile("test_file.sub");
 
     [Fact]
     public void FileReaderReadsCorrectData()
@@ -51,13 +54,14 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter.Tests
       var expected = new List<int> { 1, 2, 3, 4, 5 };
       var reader = new DrillReader(TestFile);
       var list = reader.ReadSubsetFile();
+
       Assert.Equal(expected, list);
     }
 
     [Fact]
     public void FileReaderThrowsIfFileNotExists()
     {
-      Assert.Throws<InvalidOperationException>(() => new DrillReader(""));
+      Assert.Throws<InvalidOperationException>(() => new DrillReader("sdasdsad38479328s0jdoqmd03m"));
     }
   }
 }

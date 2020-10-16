@@ -9,19 +9,24 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter.FileIO.Drills
   public class FilteredDrillWriter : SubsetWriter
   {
 
-    private static DirectoryPath SubsetsDir = new DirectoryPath(Svc.SM.Collection.Path).Combine("subsets");
-    private static DirectoryPath FilteredDrillsDir = SubsetsDir.Combine("drills");
+    private FilePath SubsetFile { get; } 
 
-    public FilteredDrillWriter(List<int> elementIds) : base(elementIds) { }
+    public FilteredDrillWriter(List<int> elementIds, FilePath outputFile = null) : base(elementIds) 
+    {
+      SubsetFile = outputFile == null
+        ? GenerateDrillPath()
+        : outputFile;
+    }
 
     public bool WriteDrillFile()
     {
-      var file = GenerateDrillPath();
-      return WriteSubsetFile(file);
+      return WriteSubsetFile(SubsetFile);
     }
 
     private static FilePath GenerateDrillPath()
     {
+      var SubsetsDir = new DirectoryPath(Svc.SM.Collection.Path).Combine("subsets");
+      var FilteredDrillsDir = SubsetsDir.Combine("drills");
       var fileName = DateTime.Now.ToString("yyyyMMddTHHmmss") + "_drill.sub";
       return FilteredDrillsDir.CombineFile(fileName);
     }
