@@ -1,16 +1,18 @@
 ﻿using SuperMemoAssistant.Interop.SuperMemo.Elements.Types;
 using SuperMemoAssistant.Plugins.FinalDrillFilter.FileIO.Drills;
 using SuperMemoAssistant.Plugins.FinalDrillFilter.Helpers;
+using SuperMemoAssistant.Plugins.FinalDrillFilter.Models;
 using SuperMemoAssistant.Services;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Web.SessionState;
 using System.Windows;
 
 namespace SuperMemoAssistant.Plugins.FinalDrillFilter.UI
 {
   /// <summary>Collection of IElements in the drill</summary>
-  public class ElementCollection : ObservableCollection<IElement>
+  public class ElementCollection : ObservableCollection<ElementViewModel>
   {
   }
 
@@ -20,30 +22,29 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter.UI
   public partial class FilterWdw : Window
   {
 
-    public List<IElement> OriginalDrillQueue { get; private set; }
-    private FinalDrillFilterCfg Config => Svc<FinalDrillFilterPlugin>.Plugin.Config;
-    public string DefaultFilter => Config.DefaultFilter;
+    public List<ElementViewModel> OriginalDrillQueue { get; private set; }
+    private static FinalDrillFilterCfg Config => Svc<FinalDrillFilterPlugin>.Plugin.Config;
+    public string Filter { get; set; } = Config.DefaultFilter;
     public bool IsClosed { get; set; } = false;
 
-    public FilterWdw(List<IElement> elements)
+    public FilterWdw(List<ElementViewModel> elements)
     {
       elements.ThrowIfNullOrEmpty("Failed to create filter window because element list was null or empty");
-      OriginalDrillQueue = elements;
-      Closing += (s, e) => IsClosed = true;
 
       InitializeComponent();
+      OriginalDrillQueue = elements;
+      Closing += (s, e) => IsClosed = true;
       this.AddElements(elements);
+
       DataContext = this;
     }
 
-    private void AddElements(List<IElement> cards)
+    private void AddElements(List<ElementViewModel> cards)
     {
       ElementCollection _elements = (ElementCollection)this.Resources["elements"];
       _elements.Clear();
       foreach (var card in cards)
-      {
         _elements.Add(card);
-      }
     }
 
     private void CancelBtnClick(object sender, RoutedEventArgs e)
@@ -108,11 +109,11 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter.UI
       MessageBox.Show(msg, title);
     }
 
-    private List<IElement> GetFilteredElements()
+    private List<ElementViewModel> GetFilteredElements()
     {
       var filter = ParseFilter(FilterString.Text);
       return OriginalDrillQueue
-        .Where(x => x.GetCategoryPath().Any(x => filter.Contains(x)))
+        .Where(x => x.CategoryPath.Any(x => filter.Contains(x)))
         .ToList();
     }
 
@@ -120,6 +121,11 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter.UI
     {
       var remaining = GetFilteredElements();
       AddElements(remaining);
+    }
+
+    private void ResetBtnClick(object sender, RoutedEventArgs e)
+    {
+      AddElements(OriginalDrillQueue);
     }
   }
 }

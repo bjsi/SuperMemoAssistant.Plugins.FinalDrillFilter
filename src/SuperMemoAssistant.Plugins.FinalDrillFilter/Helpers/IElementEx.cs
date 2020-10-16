@@ -12,7 +12,7 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter.Helpers
       while (element != null)
       {
         var parent = element.Parent;
-        if (parent.Type == ElementType.ConceptGroup)
+        if (parent != null && parent.Type == ElementType.ConceptGroup)
         {
           // TODO: Is this correct?
           ret.Add(parent.Title);

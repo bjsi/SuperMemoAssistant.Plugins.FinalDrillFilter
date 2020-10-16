@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Anotar.Serilog;
@@ -7,6 +8,7 @@ using SuperMemoAssistant.Extensions;
 using SuperMemoAssistant.Interop.SuperMemo.Elements.Types;
 using SuperMemoAssistant.Plugins.FinalDrillFilter.FileIO.Drills;
 using SuperMemoAssistant.Plugins.FinalDrillFilter.Helpers;
+using SuperMemoAssistant.Plugins.FinalDrillFilter.Models;
 using SuperMemoAssistant.Plugins.FinalDrillFilter.UI;
 using SuperMemoAssistant.Services;
 using SuperMemoAssistant.Services.IO.HotKeys;
@@ -95,7 +97,7 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter
         "OpenFinalDrillFilter",
         "Opens the final drill filter window",
         HotKeyScopes.SMBrowser,
-        new HotKey(Key.M, KeyModifiers.CtrlAltShift),
+        new HotKey(Key.F, KeyModifiers.CtrlAltShift),
         OpenFinalDrillFilter
       );
     }
@@ -157,9 +159,13 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter
         return;
       }
 
+      var viewModels = elements
+        .Select(x => new ElementViewModel(x))
+        .ToList();
+
       Application.Current.Dispatcher.Invoke(() =>
       {
-        var wdw = new FilterWdw(elements);
+        var wdw = new FilterWdw(viewModels);
         wdw.ShowAndActivate();
       });
     }
