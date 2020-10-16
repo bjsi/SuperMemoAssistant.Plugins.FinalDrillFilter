@@ -1,4 +1,5 @@
 ﻿using Extensions.System.IO;
+using SuperMemoAssistant.Plugins.FinalDrillFilter.FileIO.Interfaces;
 using SuperMemoAssistant.Plugins.FinalDrillFilter.FileIO.Subsets;
 using SuperMemoAssistant.Services;
 using System;
@@ -6,7 +7,7 @@ using System.Collections.Generic;
 
 namespace SuperMemoAssistant.Plugins.FinalDrillFilter.FileIO.Drills
 {
-  public class FilteredDrillWriter : SubsetWriter
+  public class FilteredDrillWriter : SubsetWriter, IDrillWriter
   {
 
     private FilePath SubsetFile { get; } 

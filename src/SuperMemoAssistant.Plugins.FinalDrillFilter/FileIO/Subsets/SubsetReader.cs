@@ -24,7 +24,7 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter.FileIO.Subsets
     /// Read the binary file as a list of ints
     /// </summary>
     /// <returns>List of ints</returns>
-    public List<int> ReadSubsetFile()
+    public List<int> ReadFile()
     {
       using (Stream stream = File.OpenRead(SubsetFile.FullPath))
         return ParseSubsetFileStream(stream);

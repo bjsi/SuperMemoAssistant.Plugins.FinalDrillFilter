@@ -1,4 +1,20 @@
-﻿#region License & Metadata
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Windows;
+using System.Windows.Input;
+using Anotar.Serilog;
+using SuperMemoAssistant.Extensions;
+using SuperMemoAssistant.Plugins.FinalDrillFilter.FileIO.Drills;
+using SuperMemoAssistant.Plugins.FinalDrillFilter.Helpers;
+using SuperMemoAssistant.Plugins.FinalDrillFilter.UI;
+using SuperMemoAssistant.Services;
+using SuperMemoAssistant.Services.IO.HotKeys;
+using SuperMemoAssistant.Services.IO.Keyboard;
+using SuperMemoAssistant.Services.Sentry;
+using SuperMemoAssistant.Services.UI.Configuration;
+using SuperMemoAssistant.Sys.IO.Devices;
+
+#region License & Metadata
 
 // The MIT License (MIT)
 // 
@@ -31,9 +47,6 @@
 
 namespace SuperMemoAssistant.Plugins.FinalDrillFilter
 {
-  using System.Diagnostics.CodeAnalysis;
-  using SuperMemoAssistant.Services.Sentry;
-
   // ReSharper disable once UnusedMember.Global
   // ReSharper disable once ClassNeverInstantiated.Global
   [SuppressMessage("Microsoft.Naming", "CA1724:TypeNamesShouldNotMatchNamespaces")]
@@ -55,7 +68,13 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter
     public override string Name => "FinalDrillFilter";
 
     /// <inheritdoc />
-    public override bool HasSettings => false;
+    public override bool HasSettings => true;
+
+    /// <summary>Plugin's config</summary>
+    public FinalDrillFilterCfg Config { get; private set; }
+
+    /// <summary>Current filter window instance</summary>
+    private FilterWdw CurrentInstance { get; set; }
 
     #endregion
 
@@ -67,31 +86,80 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter
     /// <inheritdoc />
     protected override void PluginInit()
     {
-      // Insert code that needs to be run when the plugin is initialized.
-      // Typical initialization code consists of:
-      // - Registering keyboard hotkeys
-      // - Registering to be notified about events (e.g. OnElementChanged)
-      // - Initializing your own services
-      // - Publishing services for other plugins
-
-      // If you have questions or issues, you can:
-      // - Check our wiki for developer guides https://sma.supermemo.wiki/
-      // - Browse through our plugins' source code https://github.com/supermemo/
-      // - Ask for help on our Discord server https://discord.gg/vUQhqCT
-
-      // Uncomment to register an event handler which will be notified when the displayed element changes
-      // Svc.SM.UI.ElementWdw.OnElementChanged += new ActionProxy<SMDisplayedElementChangedEventArgs>(OnElementChanged);
+      LoadConfig();
+      RegisterHotkeys();
     }
 
-    // Set HasSettings to true, and uncomment this method to add your custom logic for settings
-    // /// <inheritdoc />
-    // public override void ShowSettings()
-    // {
-    // }
+    private void RegisterHotkeys()
+    {
+      Svc.HotKeyManager.RegisterGlobal(
+        "OpenFinalDrillFilter",
+        "Opens the final drill filter window",
+        HotKeyScopes.SMBrowser,
+        new HotKey(Key.M, KeyModifiers.CtrlAltShift),
+        OpenFinalDrillFilter
+      );
+    }
+
+    [LogToErrorOnException]
+    private void OpenFinalDrillFilter()
+    {
+      var ids = ReadDrillElementIds();
+      if (ids.IsNullOrEmpty())
+      {
+        NotifyUserDrillIsEmpty();
+        return;
+      }
+
+      LaunchFinalDrillFilterWdw(ids);
+    }
+
+    /// <summary>Show a message box that the drill queue is empty</summary>
+    private void NotifyUserDrillIsEmpty()
+    {
+      var msg = "Failed to open the Final Drill Filter window because the final drill queue is empty";
+      var title = "Final Drill is Empty";
+      MessageBox.Show(msg, title);
+    }
+
+    /// <summary>Read the list of drill item ids</summary>
+    private List<int> ReadDrillElementIds()
+    {
+      var reader = new DrillReader();
+      return reader.ReadFile();
+    }
+
+    /// <summary>Open the filter window if it is not already open</summary>
+    private void LaunchFinalDrillFilterWdw(List<int> drillElementsIds)
+    {
+      if (CurrentInstance != null && !CurrentInstance.IsClosed)
+      {
+        CurrentInstance.Activate();
+        return;
+      }
+
+      var writer = new FilteredDrillWriter(drillElementsIds);
+
+      Application.Current.Dispatcher.Invoke(() =>
+      {
+        var wdw = new FilterWdw(writer);
+        wdw.ShowAndActivate();
+      });
+    }
+
+    /// <inheritdoc />
+    public override void ShowSettings()
+    {
+      ConfigurationWindow.ShowAndActivate(HotKeyManager.Instance, Config);
+    }
+
+    /// <summary>Set the plugin's config</summary>
+    private void LoadConfig()
+    {
+      Config = Svc.Configuration.Load<FinalDrillFilterCfg>() ?? new FinalDrillFilterCfg();
+    }
 
     #endregion
-
-
 
 
     #region Methods

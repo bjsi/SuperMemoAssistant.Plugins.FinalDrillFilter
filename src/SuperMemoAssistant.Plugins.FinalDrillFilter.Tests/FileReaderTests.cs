@@ -53,7 +53,7 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter.Tests
     {
       var expected = new List<int> { 1, 2, 3, 4, 5 };
       var reader = new DrillReader(TestFile);
-      var list = reader.ReadSubsetFile();
+      var list = reader.ReadFile();
 
       Assert.Equal(expected, list);
     }

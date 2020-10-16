@@ -30,7 +30,7 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter.Tests
       Assert.True(ret);
 
       var reader = new DrillReader(TestFile);
-      var actual = reader.ReadSubsetFile();
+      var actual = reader.ReadFile();
       Assert.Equal(expected, actual);
     }
   }
