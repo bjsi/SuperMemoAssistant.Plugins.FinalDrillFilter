@@ -36,7 +36,12 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter.Models
 
         var disp = comp.DisplayAt;
         if (disp == atFlag)
-          ret = comp.Text?.Value?.StripHtmlTags();
+        {
+          ret = comp.Text?.Value
+            ?.StripHtmlTags()
+            ?.DecodeHtml()
+            ?.Trim();
+        }
       }
 
       return ret ?? string.Empty;

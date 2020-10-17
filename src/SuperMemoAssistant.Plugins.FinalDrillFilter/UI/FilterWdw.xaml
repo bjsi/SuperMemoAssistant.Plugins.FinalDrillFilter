@@ -24,6 +24,7 @@
       <TextBox Name="FilterString" Text="{Binding Filter}" VerticalAlignment="Center" Margin="5"/>
     </DockPanel>
 
+    <!-- Filter Buttons -->
     <DockPanel Grid.Row="1">
       <Button Content=" Preview Filter "
               Margin="5"
@@ -45,10 +46,37 @@
               CanUserAddRows="False"
               Name="FilterDataGrid">
       <DataGrid.Columns>
-        <DataGridTextColumn Header="Id" Binding="{Binding Id}"/>
-        <DataGridTextColumn Header="Question" Binding="{Binding Question}"/>
-        <DataGridTextColumn Header="Answer" Binding="{Binding Answer}"/>
-        <DataGridTextColumn Header="Category Path" Binding="{Binding CategoryPathString}"/>
+        <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
+        
+        <!-- Question -->
+        <DataGridTextColumn Header="Question" Binding="{Binding Question}" MaxWidth="100">
+          <DataGridTextColumn.ElementStyle>
+            <Style>
+              <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+              <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+            </Style>
+          </DataGridTextColumn.ElementStyle>
+        </DataGridTextColumn>
+        
+        <!-- Answer -->
+        <DataGridTextColumn Header="Answer" Binding="{Binding Answer}" MaxWidth="100">
+          <DataGridTextColumn.ElementStyle>
+            <Style>
+              <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+              <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+            </Style>
+          </DataGridTextColumn.ElementStyle>
+        </DataGridTextColumn>
+        
+        <!-- Category Path -->
+        <DataGridTextColumn Header="Category Path" Binding="{Binding CategoryPathString}" MaxWidth="100">
+          <DataGridTextColumn.ElementStyle>
+            <Style>
+              <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+              <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+            </Style>
+          </DataGridTextColumn.ElementStyle>
+        </DataGridTextColumn>
       </DataGrid.Columns>
     </DataGrid>
 

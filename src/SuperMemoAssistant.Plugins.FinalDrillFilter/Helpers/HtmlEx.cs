@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using System.Web;
 
 namespace SuperMemoAssistant.Plugins.FinalDrillFilter.Helpers
 {
@@ -9,6 +10,11 @@ namespace SuperMemoAssistant.Plugins.FinalDrillFilter.Helpers
       var doc = new HtmlDocument();
       doc.LoadHtml(input);
       return doc.DocumentNode.InnerText;
+    }
+
+    public static string DecodeHtml(this string input)
+    {
+      return HttpUtility.HtmlDecode(input);
     }
   }
 }
